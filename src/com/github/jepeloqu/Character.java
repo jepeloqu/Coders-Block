@@ -17,7 +17,6 @@ public class Character {
    protected boolean facingLeft, facingRight;
    
    protected OrderedPair topLeft, topRight, bottomLeft, bottomRight;
-   protected OrderedPair leftBottom, leftTop, rightBottom, rightTop;
    
    protected Image characterImage;
    
@@ -81,15 +80,15 @@ public class Character {
       leftCollision = rightCollision = false;
       
       //check left side collision
-      while (level.level2[GameScreen.worldCoordToTile(getLeftBottom().getY())][GameScreen.worldCoordToTile(getLeftBottom().getX())] == TileSet.GREEN_PLATFORM_TILE ||
-             level.level2[GameScreen.worldCoordToTile(getLeftTop().getY())][GameScreen.worldCoordToTile(getLeftTop().getX())] == TileSet.GREEN_PLATFORM_TILE) {
+      while (level.level2[GameScreen.worldCoordToTile(getBottomLeft().getY())][GameScreen.worldCoordToTile(getBottomLeft().getX())] == TileSet.GREEN_PLATFORM_TILE ||
+             level.level2[GameScreen.worldCoordToTile(getTopLeft().getY())][GameScreen.worldCoordToTile(getTopLeft().getX())] == TileSet.GREEN_PLATFORM_TILE) {
          leftCollision = true;
          processXCollision(leftCollision, rightCollision);
       }
       
       //check right side collision
-      while (level.level2[GameScreen.worldCoordToTile(getRightBottom().getY())][GameScreen.worldCoordToTile(getRightBottom().getX())] == TileSet.GREEN_PLATFORM_TILE ||
-             level.level2[GameScreen.worldCoordToTile(getRightTop().getY())][GameScreen.worldCoordToTile(getRightTop().getX())] == TileSet.GREEN_PLATFORM_TILE) {
+      while (level.level2[GameScreen.worldCoordToTile(getBottomRight().getY())][GameScreen.worldCoordToTile(getBottomRight().getX())] == TileSet.GREEN_PLATFORM_TILE ||
+             level.level2[GameScreen.worldCoordToTile(getTopRight().getY())][GameScreen.worldCoordToTile(getTopRight().getX())] == TileSet.GREEN_PLATFORM_TILE) {
          rightCollision = true;
          processXCollision(leftCollision, rightCollision);
       }
@@ -172,10 +171,10 @@ public class Character {
       
       onAirLeft = onAirRight = false;
       
-      if (level.level2[GameScreen.worldCoordToTile(getBottomLeft().getY())][GameScreen.worldCoordToTile(getBottomLeft().getX())] == TileSet.BLANK_TILE)
+      if (level.level2[GameScreen.worldCoordToTile(getBottomLeft().getY() + 1)][GameScreen.worldCoordToTile(getBottomLeft().getX() + 1)] == TileSet.BLANK_TILE)
          onAirLeft = true;
       
-      if (level.level2[GameScreen.worldCoordToTile(getBottomRight().getY())][GameScreen.worldCoordToTile(getBottomRight().getX())] == TileSet.BLANK_TILE)
+      if (level.level2[GameScreen.worldCoordToTile(getBottomRight().getY() + 1)][GameScreen.worldCoordToTile(getBottomRight().getX() + 1)] == TileSet.BLANK_TILE)
          onAirRight = true;
       
       if (onAirLeft && onAirRight)
@@ -194,7 +193,6 @@ public class Character {
    
    protected void onGround() {
       dy = 0;
-      y = y + 1;
       
       jump = false;
       fall = false;
@@ -204,15 +202,11 @@ public class Character {
    }
    
    protected void updateCollisionPoints() {
-      topLeft = new OrderedPair(x + 1, y);
-      topRight = new OrderedPair(x + characterImage.getWidth(null) - 2, y);
-      bottomLeft = new OrderedPair(x + 1, y + characterImage.getHeight(null) - 1);
-      bottomRight = new OrderedPair(x + characterImage.getWidth(null) - 2, y + characterImage.getHeight(null) - 1);
-      
-      leftBottom = new OrderedPair(x, y + characterImage.getHeight(null) - 2);
-      leftTop = new OrderedPair(x, y + 1);
-      rightBottom = new OrderedPair(x + characterImage.getWidth(null) - 1, y + characterImage.getHeight(null) - 2);
-      rightTop = new OrderedPair(x + characterImage.getWidth(null) - 1, y + 1);   
+      topLeft = new OrderedPair(x, y);
+      topRight = new OrderedPair(x + characterImage.getWidth(null) - 1, y);
+      bottomLeft = new OrderedPair(x, y + characterImage.getHeight(null) - 1);
+      bottomRight = new OrderedPair(x + characterImage.getWidth(null) - 1, y + characterImage.getHeight(null) - 1);
+    
    }
    
    /*************/
@@ -233,22 +227,6 @@ public class Character {
    
    public OrderedPair getBottomRight() {
       return bottomRight;
-   }
-   
-   public OrderedPair getLeftBottom() {
-      return leftBottom;
-   }
-   
-   public OrderedPair getLeftTop() {
-      return leftTop;
-   }
-   
-   public OrderedPair getRightBottom() {
-      return rightBottom;
-   }
-   
-   public OrderedPair getRightTop() {
-      return rightTop;
    }
    
    public Image getImage() {

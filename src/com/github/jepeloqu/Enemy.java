@@ -106,15 +106,15 @@ public class Enemy extends Character {
       leftCollision = rightCollision = false;
       
       //check left side collision
-      while (level.level2[GameScreen.worldCoordToTile(getLeftBottom().getY())][GameScreen.worldCoordToTile(getLeftBottom().getX())] == TileSet.GREEN_PLATFORM_TILE ||
-             level.level2[GameScreen.worldCoordToTile(getLeftTop().getY())][GameScreen.worldCoordToTile(getLeftTop().getX())] == TileSet.GREEN_PLATFORM_TILE) {
+      while (level.level2[GameScreen.worldCoordToTile(getBottomLeft().getY())][GameScreen.worldCoordToTile(getBottomLeft().getX())] == TileSet.GREEN_PLATFORM_TILE ||
+             level.level2[GameScreen.worldCoordToTile(getTopLeft().getY())][GameScreen.worldCoordToTile(getTopLeft().getX())] == TileSet.GREEN_PLATFORM_TILE) {
          leftCollision = true;
          processXCollision(leftCollision, rightCollision);
       }
       
       //check right side collision
-      while (level.level2[GameScreen.worldCoordToTile(getRightBottom().getY())][GameScreen.worldCoordToTile(getRightBottom().getX())] == TileSet.GREEN_PLATFORM_TILE ||
-             level.level2[GameScreen.worldCoordToTile(getRightTop().getY())][GameScreen.worldCoordToTile(getRightTop().getX())] == TileSet.GREEN_PLATFORM_TILE) {
+      while (level.level2[GameScreen.worldCoordToTile(getBottomRight().getY())][GameScreen.worldCoordToTile(getBottomRight().getX())] == TileSet.GREEN_PLATFORM_TILE ||
+             level.level2[GameScreen.worldCoordToTile(getTopRight().getY())][GameScreen.worldCoordToTile(getTopRight().getX())] == TileSet.GREEN_PLATFORM_TILE) {
          rightCollision = true;
          processXCollision(leftCollision, rightCollision);
       }
