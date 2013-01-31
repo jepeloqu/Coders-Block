@@ -66,7 +66,7 @@ public class GameScreen extends JPanel implements ActionListener, KeyListener{
 
       for (int row = camera.getYTileOffset(); row < screenTileHeight + camera.getYTileOffset(); row++) {
          for (int col = camera.getXTileOffset(); col < screenTileWidth + camera.getXTileOffset(); col++) {
-            if(level.level2[row][col] == TileSet.GREEN_PLATFORM_TILE)
+            if(level.level[row][col] == TileSet.GREEN_PLATFORM_TILE)
                g2d.drawImage(tileSet.getGreenPlatformTileImage(), tileCoordToWorld(col) - camera.getXPixelOffset(), tileCoordToWorld(row) - camera.getYPixelOffset(), this);
          }
       }

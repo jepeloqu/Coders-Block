@@ -80,15 +80,15 @@ public class Character {
       leftCollision = rightCollision = false;
       
       //check left side collision
-      while (level.level2[GameScreen.worldCoordToTile(getBottomLeft().getY())][GameScreen.worldCoordToTile(getBottomLeft().getX())] == TileSet.GREEN_PLATFORM_TILE ||
-             level.level2[GameScreen.worldCoordToTile(getTopLeft().getY())][GameScreen.worldCoordToTile(getTopLeft().getX())] == TileSet.GREEN_PLATFORM_TILE) {
+      while (level.level[GameScreen.worldCoordToTile(getBottomLeft().getY())][GameScreen.worldCoordToTile(getBottomLeft().getX())] == TileSet.GREEN_PLATFORM_TILE ||
+             level.level[GameScreen.worldCoordToTile(getTopLeft().getY())][GameScreen.worldCoordToTile(getTopLeft().getX())] == TileSet.GREEN_PLATFORM_TILE) {
          leftCollision = true;
          processXCollision(leftCollision, rightCollision);
       }
       
       //check right side collision
-      while (level.level2[GameScreen.worldCoordToTile(getBottomRight().getY())][GameScreen.worldCoordToTile(getBottomRight().getX())] == TileSet.GREEN_PLATFORM_TILE ||
-             level.level2[GameScreen.worldCoordToTile(getTopRight().getY())][GameScreen.worldCoordToTile(getTopRight().getX())] == TileSet.GREEN_PLATFORM_TILE) {
+      while (level.level[GameScreen.worldCoordToTile(getBottomRight().getY())][GameScreen.worldCoordToTile(getBottomRight().getX())] == TileSet.GREEN_PLATFORM_TILE ||
+             level.level[GameScreen.worldCoordToTile(getTopRight().getY())][GameScreen.worldCoordToTile(getTopRight().getX())] == TileSet.GREEN_PLATFORM_TILE) {
          rightCollision = true;
          processXCollision(leftCollision, rightCollision);
       }
@@ -108,16 +108,16 @@ public class Character {
       risingCollision = fallingCollision = false;
 
       //check top collision
-      while (level.level2[GameScreen.worldCoordToTile(getTopLeft().getY())][GameScreen.worldCoordToTile(getTopLeft().getX())] == TileSet.GREEN_PLATFORM_TILE ||
-             level.level2[GameScreen.worldCoordToTile(getTopRight().getY())][GameScreen.worldCoordToTile(getTopRight().getX())] == TileSet.GREEN_PLATFORM_TILE) {
+      while (level.level[GameScreen.worldCoordToTile(getTopLeft().getY())][GameScreen.worldCoordToTile(getTopLeft().getX())] == TileSet.GREEN_PLATFORM_TILE ||
+             level.level[GameScreen.worldCoordToTile(getTopRight().getY())][GameScreen.worldCoordToTile(getTopRight().getX())] == TileSet.GREEN_PLATFORM_TILE) {
          risingCollision = true;
 
          processYCollision(risingCollision, fallingCollision);
       }
 
       //check bottom collision
-      while (level.level2[GameScreen.worldCoordToTile(getBottomLeft().getY())][GameScreen.worldCoordToTile(getBottomLeft().getX())] == TileSet.GREEN_PLATFORM_TILE ||
-             level.level2[GameScreen.worldCoordToTile(getBottomRight().getY())][GameScreen.worldCoordToTile(getBottomRight().getX())] == TileSet.GREEN_PLATFORM_TILE) {
+      while (level.level[GameScreen.worldCoordToTile(getBottomLeft().getY())][GameScreen.worldCoordToTile(getBottomLeft().getX())] == TileSet.GREEN_PLATFORM_TILE ||
+             level.level[GameScreen.worldCoordToTile(getBottomRight().getY())][GameScreen.worldCoordToTile(getBottomRight().getX())] == TileSet.GREEN_PLATFORM_TILE) {
 
          fallingCollision = true;
          processYCollision(risingCollision, fallingCollision);
@@ -171,10 +171,10 @@ public class Character {
       
       onAirLeft = onAirRight = false;
       
-      if (level.level2[GameScreen.worldCoordToTile(getBottomLeft().getY() + 1)][GameScreen.worldCoordToTile(getBottomLeft().getX() + 1)] == TileSet.BLANK_TILE)
+      if (level.level[GameScreen.worldCoordToTile(getBottomLeft().getY() + 1)][GameScreen.worldCoordToTile(getBottomLeft().getX() + 1)] == TileSet.BLANK_TILE)
          onAirLeft = true;
       
-      if (level.level2[GameScreen.worldCoordToTile(getBottomRight().getY() + 1)][GameScreen.worldCoordToTile(getBottomRight().getX() + 1)] == TileSet.BLANK_TILE)
+      if (level.level[GameScreen.worldCoordToTile(getBottomRight().getY() + 1)][GameScreen.worldCoordToTile(getBottomRight().getX() + 1)] == TileSet.BLANK_TILE)
          onAirRight = true;
       
       if (onAirLeft && onAirRight)
