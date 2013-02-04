@@ -1,4 +1,4 @@
-package com.github.jepeloqu;
+package com.github.jepeloqu.codersblock;
 
 
 import java.awt.Image;
@@ -47,7 +47,7 @@ public class Enemy extends Character {
    * @param level   current game level
    */ 
    @Override
-   public void mainLoop(GameLevel level) {
+   public void mainLoop(Level level) {
       walkRoutine();
       processXMovement();
       checkAndResolveXCollision(level);
@@ -100,21 +100,21 @@ public class Enemy extends Character {
    * @param level   current game level where collisions will be checked
    */ 
    @Override
-   protected void checkAndResolveXCollision(GameLevel level) {
+   protected void checkAndResolveXCollision(Level level) {
       boolean leftCollision, rightCollision;
       
       leftCollision = rightCollision = false;
       
       //check left side collision
-      while (level.level[GameScreen.worldCoordToTile(getBottomLeft().getY())][GameScreen.worldCoordToTile(getBottomLeft().getX())] == TileSet.GREEN_PLATFORM_TILE ||
-             level.level[GameScreen.worldCoordToTile(getTopLeft().getY())][GameScreen.worldCoordToTile(getTopLeft().getX())] == TileSet.GREEN_PLATFORM_TILE) {
+      while (level.level[Screen.worldCoordToTile(getBottomLeft().getY())][Screen.worldCoordToTile(getBottomLeft().getX())] == TileSet.GREEN_PLATFORM_TILE ||
+             level.level[Screen.worldCoordToTile(getTopLeft().getY())][Screen.worldCoordToTile(getTopLeft().getX())] == TileSet.GREEN_PLATFORM_TILE) {
          leftCollision = true;
          processXCollision(leftCollision, rightCollision);
       }
       
       //check right side collision
-      while (level.level[GameScreen.worldCoordToTile(getBottomRight().getY())][GameScreen.worldCoordToTile(getBottomRight().getX())] == TileSet.GREEN_PLATFORM_TILE ||
-             level.level[GameScreen.worldCoordToTile(getTopRight().getY())][GameScreen.worldCoordToTile(getTopRight().getX())] == TileSet.GREEN_PLATFORM_TILE) {
+      while (level.level[Screen.worldCoordToTile(getBottomRight().getY())][Screen.worldCoordToTile(getBottomRight().getX())] == TileSet.GREEN_PLATFORM_TILE ||
+             level.level[Screen.worldCoordToTile(getTopRight().getY())][Screen.worldCoordToTile(getTopRight().getX())] == TileSet.GREEN_PLATFORM_TILE) {
          rightCollision = true;
          processXCollision(leftCollision, rightCollision);
       }

@@ -1,4 +1,4 @@
-package com.github.jepeloqu;
+package com.github.jepeloqu.codersblock;
 
 
 
@@ -10,16 +10,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
-import javax.swing.Timer;
+import javax.swing.*;
 
 /**
- * GameScreen --- main area where our game is controlled
+ * Screen --- main area where the game is controlled
  * @author    Joe Peloquin
  */
-public class GameScreen extends JPanel implements ActionListener, KeyListener{
-   private int backgroundX;
+public class Screen extends JPanel implements ActionListener, KeyListener{
    private Timer timer;
    private Player player; 
    private Enemy enemy;
@@ -28,14 +25,16 @@ public class GameScreen extends JPanel implements ActionListener, KeyListener{
    
    private boolean leftPressed, rightPressed, spacePressed;
    
-   private GameLevel level;
+   private Level level;
    private TileSet tileSet;
    
    private int screenTileHeight;
    private int screenTileWidth;
     
-   public GameScreen(int height) {
-      setFocusable(true);        
+   public Screen() {
+      setFocusable(true);  
+      setSize(990, 510);
+      //setUndecorated(true);
       
       screenTileHeight = 18;
       screenTileWidth = 34;
@@ -43,12 +42,11 @@ public class GameScreen extends JPanel implements ActionListener, KeyListener{
       player = new Player(500, 200); 
       enemy = new Enemy(450, 50);
       camera = new Camera(player);
-      backgroundX = 0;
         
       ImageIcon ii = new ImageIcon(System.getProperty("user.dir") + File.separator + "resources" + File.separator + "images" + File.separator + "background.gif");
       background = ii.getImage();
       
-      level = new GameLevel();
+      level = new Level();
       tileSet = new TileSet();
      
       timer = new Timer(33, this);
@@ -62,7 +60,7 @@ public class GameScreen extends JPanel implements ActionListener, KeyListener{
         
       Graphics2D g2d = (Graphics2D) g;
       
-      g2d.drawImage(background, backgroundX, 0, this);
+      g2d.drawImage(background, 0, 0, this);
 
       for (int row = camera.getYTileOffset(); row < screenTileHeight + camera.getYTileOffset(); row++) {
          for (int col = camera.getXTileOffset(); col < screenTileWidth + camera.getXTileOffset(); col++) {
@@ -74,7 +72,7 @@ public class GameScreen extends JPanel implements ActionListener, KeyListener{
       g2d.drawImage(enemy.getImage(), enemy.getX() - camera.getXPixelOffset(), enemy.getY() - camera.getYPixelOffset(), this);
       g2d.drawImage(player.getImage(), player.getX() - camera.getXPixelOffset(), player.getY() - camera.getYPixelOffset(), this);
 
-       
+      g2d.drawString("C", camera.getXPixelOffset(), camera.getYPixelOffset()); 
       drawDebugData(g2d);
       
    }

@@ -1,4 +1,4 @@
-package com.github.jepeloqu;
+package com.github.jepeloqu.codersblock;
 
 public class Camera {
    int x, y;
@@ -38,8 +38,8 @@ public class Camera {
       else if (yPixelOffset > 540)
          yPixelOffset = 540;
       
-      xTileOffset = GameScreen.worldCoordToTile(xPixelOffset);
-      yTileOffset = GameScreen.worldCoordToTile(yPixelOffset);
+      xTileOffset = Screen.worldCoordToTile(xPixelOffset);
+      yTileOffset = Screen.worldCoordToTile(yPixelOffset);
    }
    
    /*************/

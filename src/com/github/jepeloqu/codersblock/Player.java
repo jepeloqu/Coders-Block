@@ -1,4 +1,4 @@
-package com.github.jepeloqu;
+package com.github.jepeloqu.codersblock;
 
 
 
@@ -51,7 +51,7 @@ public class Player extends Character {
    * @param level   current game level
    */ 
    @Override 
-   public void mainLoop(GameLevel level) {
+   public void mainLoop(Level level) {
       processXMovement();
       checkAndResolveXCollision(level);
       if (!standing()){

@@ -1,4 +1,4 @@
-package com.github.jepeloqu;
+package com.github.jepeloqu.codersblock;
 
 
 

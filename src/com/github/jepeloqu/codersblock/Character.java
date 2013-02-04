@@ -1,4 +1,4 @@
-package com.github.jepeloqu;
+package com.github.jepeloqu.codersblock;
 
 
 import java.awt.Image;
@@ -16,7 +16,7 @@ public class Character {
    protected boolean jump, fall, stand; 
    protected boolean facingLeft, facingRight;
    
-   protected OrderedPair topLeft, topRight, bottomLeft, bottomRight;
+   protected CollisionPoint topLeft, topRight, bottomLeft, bottomRight;
    
    protected Image characterImage;
    
@@ -29,7 +29,7 @@ public class Character {
    * 
    * @param level   current game level
    */ 
-   protected void mainLoop(GameLevel level) {
+   protected void mainLoop(Level level) {
       
    }
    
@@ -74,21 +74,21 @@ public class Character {
    * 
    * @param level   current game level where collisions will be checked
    */ 
-   protected void checkAndResolveXCollision(GameLevel level) {
+   protected void checkAndResolveXCollision(Level level) {
       boolean leftCollision, rightCollision;
       
       leftCollision = rightCollision = false;
       
       //check left side collision
-      while (level.level[GameScreen.worldCoordToTile(getBottomLeft().getY())][GameScreen.worldCoordToTile(getBottomLeft().getX())] == TileSet.GREEN_PLATFORM_TILE ||
-             level.level[GameScreen.worldCoordToTile(getTopLeft().getY())][GameScreen.worldCoordToTile(getTopLeft().getX())] == TileSet.GREEN_PLATFORM_TILE) {
+      while (level.level[Screen.worldCoordToTile(getBottomLeft().getY())][Screen.worldCoordToTile(getBottomLeft().getX())] == TileSet.GREEN_PLATFORM_TILE ||
+             level.level[Screen.worldCoordToTile(getTopLeft().getY())][Screen.worldCoordToTile(getTopLeft().getX())] == TileSet.GREEN_PLATFORM_TILE) {
          leftCollision = true;
          processXCollision(leftCollision, rightCollision);
       }
       
       //check right side collision
-      while (level.level[GameScreen.worldCoordToTile(getBottomRight().getY())][GameScreen.worldCoordToTile(getBottomRight().getX())] == TileSet.GREEN_PLATFORM_TILE ||
-             level.level[GameScreen.worldCoordToTile(getTopRight().getY())][GameScreen.worldCoordToTile(getTopRight().getX())] == TileSet.GREEN_PLATFORM_TILE) {
+      while (level.level[Screen.worldCoordToTile(getBottomRight().getY())][Screen.worldCoordToTile(getBottomRight().getX())] == TileSet.GREEN_PLATFORM_TILE ||
+             level.level[Screen.worldCoordToTile(getTopRight().getY())][Screen.worldCoordToTile(getTopRight().getX())] == TileSet.GREEN_PLATFORM_TILE) {
          rightCollision = true;
          processXCollision(leftCollision, rightCollision);
       }
@@ -102,22 +102,22 @@ public class Character {
    * 
    * @param level   current game level where collisions will be checked
    */ 
-   protected void checkAndResolveYCollision(GameLevel level) {
+   protected void checkAndResolveYCollision(Level level) {
       boolean risingCollision, fallingCollision;
       
       risingCollision = fallingCollision = false;
 
       //check top collision
-      while (level.level[GameScreen.worldCoordToTile(getTopLeft().getY())][GameScreen.worldCoordToTile(getTopLeft().getX())] == TileSet.GREEN_PLATFORM_TILE ||
-             level.level[GameScreen.worldCoordToTile(getTopRight().getY())][GameScreen.worldCoordToTile(getTopRight().getX())] == TileSet.GREEN_PLATFORM_TILE) {
+      while (level.level[Screen.worldCoordToTile(getTopLeft().getY())][Screen.worldCoordToTile(getTopLeft().getX())] == TileSet.GREEN_PLATFORM_TILE ||
+             level.level[Screen.worldCoordToTile(getTopRight().getY())][Screen.worldCoordToTile(getTopRight().getX())] == TileSet.GREEN_PLATFORM_TILE) {
          risingCollision = true;
 
          processYCollision(risingCollision, fallingCollision);
       }
 
       //check bottom collision
-      while (level.level[GameScreen.worldCoordToTile(getBottomLeft().getY())][GameScreen.worldCoordToTile(getBottomLeft().getX())] == TileSet.GREEN_PLATFORM_TILE ||
-             level.level[GameScreen.worldCoordToTile(getBottomRight().getY())][GameScreen.worldCoordToTile(getBottomRight().getX())] == TileSet.GREEN_PLATFORM_TILE) {
+      while (level.level[Screen.worldCoordToTile(getBottomLeft().getY())][Screen.worldCoordToTile(getBottomLeft().getX())] == TileSet.GREEN_PLATFORM_TILE ||
+             level.level[Screen.worldCoordToTile(getBottomRight().getY())][Screen.worldCoordToTile(getBottomRight().getX())] == TileSet.GREEN_PLATFORM_TILE) {
 
          fallingCollision = true;
          processYCollision(risingCollision, fallingCollision);
@@ -166,15 +166,15 @@ public class Character {
    * 
    * @param level   current game level where fall will be checked
    */ 
-   protected void checkFall(GameLevel level){
+   protected void checkFall(Level level){
       boolean onAirLeft, onAirRight;
       
       onAirLeft = onAirRight = false;
       
-      if (level.level[GameScreen.worldCoordToTile(getBottomLeft().getY() + 1)][GameScreen.worldCoordToTile(getBottomLeft().getX() + 1)] == TileSet.BLANK_TILE)
+      if (level.level[Screen.worldCoordToTile(getBottomLeft().getY() + 1)][Screen.worldCoordToTile(getBottomLeft().getX() + 1)] == TileSet.BLANK_TILE)
          onAirLeft = true;
       
-      if (level.level[GameScreen.worldCoordToTile(getBottomRight().getY() + 1)][GameScreen.worldCoordToTile(getBottomRight().getX() + 1)] == TileSet.BLANK_TILE)
+      if (level.level[Screen.worldCoordToTile(getBottomRight().getY() + 1)][Screen.worldCoordToTile(getBottomRight().getX() + 1)] == TileSet.BLANK_TILE)
          onAirRight = true;
       
       if (onAirLeft && onAirRight)
@@ -202,30 +202,52 @@ public class Character {
    }
    
    protected void updateCollisionPoints() {
-      topLeft = new OrderedPair(x, y);
-      topRight = new OrderedPair(x + characterImage.getWidth(null) - 1, y);
-      bottomLeft = new OrderedPair(x, y + characterImage.getHeight(null) - 1);
-      bottomRight = new OrderedPair(x + characterImage.getWidth(null) - 1, y + characterImage.getHeight(null) - 1);
+      topLeft = new CollisionPoint(x, y);
+      topRight = new CollisionPoint(x + characterImage.getWidth(null) - 1, y);
+      bottomLeft = new CollisionPoint(x, y + characterImage.getHeight(null) - 1);
+      bottomRight = new CollisionPoint(x + characterImage.getWidth(null) - 1, y + characterImage.getHeight(null) - 1);
     
+   }
+   
+   /********************/
+   /** Internal Class **/
+   /********************/
+   
+   protected class CollisionPoint {
+      private int x;
+      private int y;
+   
+      public CollisionPoint(int x, int y){
+         this.x = x;
+         this.y = y;
+      }
+   
+      public int getX(){
+         return x;
+      }
+   
+      public int getY(){
+         return y;
+      }
    }
    
    /*************/
    /** GETTERS **/
    /*************/
    
-   public OrderedPair getTopLeft() {
+   public CollisionPoint getTopLeft() {
       return topLeft;
    }
    
-   public OrderedPair getTopRight() {
+   public CollisionPoint getTopRight() {
       return topRight;
    }
    
-   public OrderedPair getBottomLeft() {
+   public CollisionPoint getBottomLeft() {
       return bottomLeft;
    }
    
-   public OrderedPair getBottomRight() {
+   public CollisionPoint getBottomRight() {
       return bottomRight;
    }
    
