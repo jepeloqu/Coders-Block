@@ -2,6 +2,7 @@ package com.github.jepeloqu.codersblock;
 
 
 import java.awt.Image;
+import java.awt.Rectangle;
 
 /**
  * Character --- Defines non-static entities, inherited by player and all enemies
@@ -18,6 +19,11 @@ public class Character {
    
    protected CollisionPoint topLeft, topRight, bottomLeft, bottomRight;
    
+   protected Rectangle hitBox;
+   int hitPoints;
+   long lastHitTime;
+   boolean dead;
+   
    protected Image characterImage;
    
    public Character() {
@@ -33,7 +39,7 @@ public class Character {
       
    }
    
-   public void addImpulse(double xImpulse, double yImpulse) {
+   protected void addImpulse(double xImpulse, double yImpulse) {
       dx = dx + xImpulse;
       if (dx > maxSpeed)
          dx = maxSpeed;
@@ -45,13 +51,13 @@ public class Character {
    protected void processXMovement() {
       x = x + (int)Math.round(dx);
       
-      updateCollisionPoints();
+      updateHitBoxAndCollisionPoints();
    }
    
    protected void processYMovement() {
       y = y + (int)Math.round(dy);
       
-      updateCollisionPoints();
+      updateHitBoxAndCollisionPoints();
    }
    
    protected void applyDamping() {
@@ -142,7 +148,7 @@ public class Character {
       else if (rightCollision)
          x = x - 1;
       
-      updateCollisionPoints();
+      updateHitBoxAndCollisionPoints();
    }
    
    /**
@@ -158,7 +164,7 @@ public class Character {
       else if (fallingCollision)
          y = y - 1;
       
-      updateCollisionPoints();
+      updateHitBoxAndCollisionPoints();
    }
    
    /**
@@ -171,10 +177,12 @@ public class Character {
       
       onAirLeft = onAirRight = false;
       
-      if (level.level[Screen.worldCoordToTile(getBottomLeft().getY() + 1)][Screen.worldCoordToTile(getBottomLeft().getX() + 1)] == TileSet.BLANK_TILE)
+      if (level.level[Screen.worldCoordToTile(getBottomLeft().getY() + 1)][Screen.worldCoordToTile(getBottomLeft().getX() + 1)] == TileSet.BLANK_TILE ||
+          level.level[Screen.worldCoordToTile(getBottomLeft().getY() + 1)][Screen.worldCoordToTile(getBottomLeft().getX() + 1)] == TileSet.SPIKE_TILE)
          onAirLeft = true;
       
-      if (level.level[Screen.worldCoordToTile(getBottomRight().getY() + 1)][Screen.worldCoordToTile(getBottomRight().getX() + 1)] == TileSet.BLANK_TILE)
+      if (level.level[Screen.worldCoordToTile(getBottomRight().getY() + 1)][Screen.worldCoordToTile(getBottomRight().getX() + 1)] == TileSet.BLANK_TILE ||
+          level.level[Screen.worldCoordToTile(getBottomRight().getY() + 1)][Screen.worldCoordToTile(getBottomRight().getX() + 1)] == TileSet.SPIKE_TILE)
          onAirRight = true;
       
       if (onAirLeft && onAirRight)
@@ -198,39 +206,36 @@ public class Character {
       fall = false;
       stand = true;
       
-      updateCollisionPoints(); 
+      updateHitBoxAndCollisionPoints(); 
    }
    
-   protected void updateCollisionPoints() {
+   protected void updateHitBoxAndCollisionPoints() {
+      hitBox = new Rectangle(x, y, 30, 30);
+      
       topLeft = new CollisionPoint(x, y);
       topRight = new CollisionPoint(x + characterImage.getWidth(null) - 1, y);
       bottomLeft = new CollisionPoint(x, y + characterImage.getHeight(null) - 1);
       bottomRight = new CollisionPoint(x + characterImage.getWidth(null) - 1, y + characterImage.getHeight(null) - 1);
-    
    }
    
-   /********************/
-   /** Internal Class **/
-   /********************/
-   
-   protected class CollisionPoint {
-      private int x;
-      private int y;
-   
-      public CollisionPoint(int x, int y){
-         this.x = x;
-         this.y = y;
-      }
-   
-      public int getX(){
-         return x;
-      }
-   
-      public int getY(){
-         return y;
+      protected void checkIfTouchingSpike(Level level) {
+      if(level.level[Screen.worldCoordToTile(getBottomLeft().getY())][Screen.worldCoordToTile(getBottomLeft().getX())] == TileSet.SPIKE_TILE ||
+         level.level[Screen.worldCoordToTile(getBottomRight().getY())][Screen.worldCoordToTile(getBottomRight().getX())] == TileSet.SPIKE_TILE ||
+         level.level[Screen.worldCoordToTile(getTopLeft().getY())][Screen.worldCoordToTile(getTopLeft().getX())] == TileSet.SPIKE_TILE ||
+         level.level[Screen.worldCoordToTile(getTopRight().getY())][Screen.worldCoordToTile(getTopRight().getX())] == TileSet.SPIKE_TILE) {
+         
+         dead = true;
+         hitPoints = 0;
       }
    }
-   
+
+   /*************/
+   /** SETTERS **/
+   /*************/
+   protected void setXGroundImpulse(Double newXImpulse) {
+      xGroundImpulse = newXImpulse;
+   }
+      
    /*************/
    /** GETTERS **/
    /*************/
@@ -253,10 +258,6 @@ public class Character {
    
    public Image getImage() {
       return characterImage;
-   }
-   
-   public int getCharHeight() {
-      return characterImage.getHeight(null);
    }
    
    public boolean jumping() {
@@ -293,5 +294,13 @@ public class Character {
    
    public double getdy() {
       return dy;
+   }
+   
+   public int getHitPoints() {
+      return hitPoints;
+   }
+   
+   public Rectangle getHitBox() {
+      return hitBox;
    }
 }

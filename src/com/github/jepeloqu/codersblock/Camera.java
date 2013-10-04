@@ -1,31 +1,21 @@
 package com.github.jepeloqu.codersblock;
 
 public class Camera {
-   int x, y;
+   int xStartingPoint, yStartingPoint;
+   int xLimit, yLimit;
    int xPixelOffset, yPixelOffset;
    int xTileOffset, yTileOffset;
    
    public Camera(Player character) {
+      xStartingPoint = 495;
+      yStartingPoint = 255;
       updateCamera(character);
    }
    
    public void updateCamera(Player character) {
-      x = character.getX();
-      y = character.getY();
       
-      //Make sure camera is within camera range
-      if (x > 496)
-         x = 496;
-      else if (x < 494)
-         x = 494;
-      
-      if (y > 256)
-         y = 256;
-      else if (y < 254)
-         y = 254;
-      
-      xPixelOffset = character.getX() - x;
-      yPixelOffset = character.getY() - y;
+      xPixelOffset = character.getX() - xStartingPoint;
+      yPixelOffset = character.getY() - yStartingPoint;
       
       //Limit Pixel Offset to stay within level
       if (xPixelOffset < 0)
@@ -47,11 +37,11 @@ public class Camera {
    /*************/
    
    public int getX() {
-      return x;
+      return xStartingPoint;
    }
    
    public int getY() {
-      return y;
+      return yStartingPoint;
    }
    
    public int getXPixelOffset() {

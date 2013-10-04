@@ -6,21 +6,30 @@ import java.io.File;
 import javax.swing.ImageIcon;
 
 public class Enemy extends Character {
+   private boolean playerSpotted;
+   private boolean playerAbove;
    
    public Enemy(int xPosition, int yPosition) {
       super();
       x = xPosition;
       y = yPosition;
       
-      jump = fall = false;
+      jump = false;
+      fall = false;
       stand = true;
       
-      facingLeft = true;
-      facingRight = false;
+      facingLeft = false;
+      facingRight = true;
+      
+      playerSpotted = false;
+      playerAbove = false;
+      
+      dead = false;
       
       updateImage();
+      updateHitBoxAndCollisionPoints();
+      
       initializePhysicsValues();
-      updateCollisionPoints();
    }
    
    /**
@@ -45,38 +54,109 @@ public class Enemy extends Character {
    * Main loop executed every tick
    * 
    * @param level   current game level
+   * @param player  player object
    */ 
-   @Override
-   public void mainLoop(Level level) {
-      walkRoutine();
-      processXMovement();
-      checkAndResolveXCollision(level);
-      if (!standing()){
+   public void mainLoop(Level level, Player player) {
+      if(!dead) {
+         checkIfPlayerSpotted(player);
+         checkIfPlayerAbove(player);
+         
+         if(playerSpotted) {
+            setXGroundImpulse(1.2);
+            facePlayer(player);
+            if(playerAbove)
+               jump();
+         }
+         else
+           setXGroundImpulse(1.0);
+         
+         walk();
+         processXMovement();
+         checkIfTouchingSpike(level);
+         checkAndResolveXCollision(level);
+      }
+      
+      if (!standing()) {
          processYMovement();
+         checkIfTouchingSpike(level);
          checkAndResolveYCollision(level);
       }
-      if (standing()){
+      else if (standing()) {
          checkFall(level);
       }
-      applyDamping();
+      
       applyGravity();
+      applyDamping();
+      updateImage();
    }
    
    private void updateImage() {
-      if (facingLeft) {
-         ImageIcon ii = new ImageIcon(System.getProperty("user.dir") + File.separator + "resources" + File.separator + "images" + File.separator + "Enemy_Left.gif");
-         characterImage = ii.getImage();
+      if (dead) {
+         if (facingLeft) {
+            ImageIcon ii = new ImageIcon(System.getProperty("user.dir") + File.separator + "resources" + File.separator + "images" + File.separator + "Dead_Left.gif");
+            characterImage = ii.getImage();
+         }
+         else if (facingRight) {
+            ImageIcon ii = new ImageIcon(System.getProperty("user.dir") + File.separator + "resources" + File.separator + "images" + File.separator + "Dead_Right.gif");
+            characterImage = ii.getImage();
+         }
       }
-      else if (facingRight) {
-         ImageIcon ii = new ImageIcon(System.getProperty("user.dir") + File.separator + "resources" + File.separator + "images" + File.separator + "Enemy_Right.gif");
-         characterImage = ii.getImage();
+      else if (playerSpotted) {
+         if (facingLeft) {
+            ImageIcon ii = new ImageIcon(System.getProperty("user.dir") + File.separator + "resources" + File.separator + "images" + File.separator + "AngryEnemy_Left.gif");
+            characterImage = ii.getImage();
+         }
+         else if (facingRight) {
+            ImageIcon ii = new ImageIcon(System.getProperty("user.dir") + File.separator + "resources" + File.separator + "images" + File.separator + "AngryEnemy_Right.gif");
+            characterImage = ii.getImage();
+         }
       }
+      else if (!playerSpotted) {
+         if (facingLeft) {
+            ImageIcon ii = new ImageIcon(System.getProperty("user.dir") + File.separator + "resources" + File.separator + "images" + File.separator + "Enemy_Left.gif");
+            characterImage = ii.getImage();
+         }
+         else if (facingRight) {
+            ImageIcon ii = new ImageIcon(System.getProperty("user.dir") + File.separator + "resources" + File.separator + "images" + File.separator + "Enemy_Right.gif");
+            characterImage = ii.getImage();
+         }
+      }
+   }
+   
+   private void facePlayer(Player player) {
+      if(this.x < player.getX()) {
+         facingLeft = false;
+         facingRight = true;
+      } 
+      else if (this.x > player.getX()) {
+         facingLeft = true;
+         facingRight = false;
+      }
+   }
+   
+   private void checkIfPlayerSpotted(Player player) {
+      if((Math.abs(this.x - player.getX()) <= 150) && (Math.abs(this.y - player.getY()) <= 150))
+         if((this.x < player.getX()) && facingRight) {
+            playerSpotted = true;
+         } 
+         else if((this.x > player.getX()) && facingLeft) {
+            playerSpotted = true;
+         } 
+         else if (!(Math.abs(this.x - player.getX()) <= 30))
+            playerSpotted = false;
+   }
+   
+   private void checkIfPlayerAbove(Player player) {
+      if(this.y > player.getY())
+         playerAbove = true;
+      else 
+         playerAbove = false;
    }
    
    /**
    * Move in whatever direction currently facing
    */ 
-   private void walkRoutine() {
+   private void walk() {
       if (facingLeft) {
          updateImage();
          if (stand)
@@ -119,33 +199,34 @@ public class Enemy extends Character {
          processXCollision(leftCollision, rightCollision);
       }
       
-      //reverse direction
+      
+      if(leftCollision || rightCollision) {
+         if (playerSpotted)
+            jump();
+         else
+            reverseDirection(leftCollision, rightCollision);
+      }
+   }
+   
+   public void jump() {
+      if(stand) {
+         addImpulse(0, -yJumpImpulse);
+         stand = false;
+         fall = false;
+         jump = true;
+      }
+   }
+   
+   public void reverseDirection(boolean leftCollision, boolean rightCollision) {
       if (leftCollision) {
          facingLeft = false;
          facingRight = true;
          dx = 0;
-      } 
+      }  
       else if (rightCollision) {
          facingLeft = true;
          facingRight = false;
          dx = 0;
       }
    }
-   
-   /*************/
-   /** GETTERS **/
-   /*************/
-   
-   public Image getImage() {
-      return characterImage;
-   }
-   
-   public int getX() {
-      return x;
-   }
-   
-   public int getY() {
-      return y;
-   }
-   
 }

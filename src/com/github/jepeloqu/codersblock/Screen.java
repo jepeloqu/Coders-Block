@@ -2,56 +2,69 @@ package com.github.jepeloqu.codersblock;
 
 
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.*;
 import java.io.File;
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
 
 /**
  * Screen --- main area where the game is controlled
  * @author    Joe Peloquin
  */
-public class Screen extends JPanel implements ActionListener, KeyListener{
-   private Timer timer;
+public class Screen extends JPanel{
    private Player player; 
    private Enemy enemy;
    private Camera camera;
    private Image background;
    
-   private boolean leftPressed, rightPressed, spacePressed;
-   
    private Level level;
    private TileSet tileSet;
    
-   private int screenTileHeight;
-   private int screenTileWidth;
+   private int screenHeight, screenWidth;
+   private int tileHeight, tileWidth;
+   private int playerXPosition, playerYPosition;
+   private int enemyXPosition, enemyYPosition;
     
    public Screen() {
-      setFocusable(true);  
-      setSize(990, 510);
-      //setUndecorated(true);
+      initializeScreenVariables();    
+
+      Dimension dim = new Dimension(screenWidth, screenHeight);
+      this.setPreferredSize(dim);
       
-      screenTileHeight = 18;
-      screenTileWidth = 34;
-        
-      player = new Player(500, 200); 
-      enemy = new Enemy(450, 50);
+      player = new Player(playerXPosition, playerYPosition); 
+      enemy = new Enemy(enemyXPosition, enemyYPosition);
       camera = new Camera(player);
-        
+  
       ImageIcon ii = new ImageIcon(System.getProperty("user.dir") + File.separator + "resources" + File.separator + "images" + File.separator + "background.gif");
       background = ii.getImage();
       
       level = new Level();
       tileSet = new TileSet();
-     
-      timer = new Timer(33, this);
-      timer.start();
-      addKeyListener(this);
+   }
+   
+   private void initializeScreenVariables() {
+      
+      screenWidth = 990;
+      screenHeight = 510;
+      
+      tileHeight = 18;
+      tileWidth = 34;
+      
+      playerXPosition = 550;
+      playerYPosition = 400;
+      
+      enemyXPosition = 50;
+      enemyYPosition = 400;
+   }
+   
+   public void mainLoop(boolean leftPressed, boolean rightPressed, boolean spacePressed) {
+      player.mainLoop(level, enemy, leftPressed, rightPressed, spacePressed);
+      
+      enemy.mainLoop(level, player);
+      
+      camera.updateCamera(player);
+      
+      repaint();
    }
     
    @Override
@@ -62,17 +75,21 @@ public class Screen extends JPanel implements ActionListener, KeyListener{
       
       g2d.drawImage(background, 0, 0, this);
 
-      for (int row = camera.getYTileOffset(); row < screenTileHeight + camera.getYTileOffset(); row++) {
-         for (int col = camera.getXTileOffset(); col < screenTileWidth + camera.getXTileOffset(); col++) {
+      for (int row = camera.getYTileOffset(); row < tileHeight + camera.getYTileOffset(); row++) {
+         for (int col = camera.getXTileOffset(); col < tileWidth + camera.getXTileOffset(); col++) {
             if(level.level[row][col] == TileSet.GREEN_PLATFORM_TILE)
                g2d.drawImage(tileSet.getGreenPlatformTileImage(), tileCoordToWorld(col) - camera.getXPixelOffset(), tileCoordToWorld(row) - camera.getYPixelOffset(), this);
+            else if (level.level[row][col] == TileSet.SPIKE_TILE)
+               g2d.drawImage(tileSet.getSpikeTileImage(), tileCoordToWorld(col) - camera.getXPixelOffset(), tileCoordToWorld(row) - camera.getYPixelOffset(), this);
          }
       }
 
       g2d.drawImage(enemy.getImage(), enemy.getX() - camera.getXPixelOffset(), enemy.getY() - camera.getYPixelOffset(), this);
       g2d.drawImage(player.getImage(), player.getX() - camera.getXPixelOffset(), player.getY() - camera.getYPixelOffset(), this);
 
-      g2d.drawString("C", camera.getXPixelOffset(), camera.getYPixelOffset()); 
+      g2d.setColor(Color.RED); 
+      g2d.fillRect(50, 15, player.getHitPoints() * 30, 30);
+      
       drawDebugData(g2d);
       
    }
@@ -88,7 +105,7 @@ public class Screen extends JPanel implements ActionListener, KeyListener{
       g2d.drawString("X Tile Offset: " + Integer.toString(camera.getXTileOffset()), 5, 105);
       g2d.drawString("Y Tile Offset: " + Integer.toString(camera.getYTileOffset()), 5, 120);
       */
-      
+      /*
       g2d.drawString("X Velocity: " + Double.toString(player.getdx()), 5, 15);
       g2d.drawString("Y Velocity: " + Double.toString(player.getdy()), 5, 30);
       if (player.jumping())
@@ -98,20 +115,8 @@ public class Screen extends JPanel implements ActionListener, KeyListener{
       else if (player.falling())
          g2d.drawString("Falling", 5, 75);
       g2d.drawString("Tile X: " + worldCoordToTile(player.getX()) + " Tile Y: " + worldCoordToTile(player.getY()), 5, 90);
-   
+      */
    }
-    
-   @Override
-   public void actionPerformed(ActionEvent e) {
-      player.updateState(leftPressed, rightPressed, spacePressed);
-      player.mainLoop(level);
-      
-      enemy.mainLoop(level);
-      
-      camera.updateCamera(player);
-      
-      repaint();
-   } 
    
    public static int tileCoordToWorld(int tileCoord) {
       
@@ -122,29 +127,5 @@ public class Screen extends JPanel implements ActionListener, KeyListener{
 
       return worldCoord / 30;
    }
-    
-   @Override
-   public void keyPressed(KeyEvent input) {
-      if (input.getKeyCode() == KeyEvent.VK_D)
-         rightPressed = true;
-      else if (input.getKeyCode() == KeyEvent.VK_A)
-         leftPressed = true;
-      else if (input.getKeyCode() == KeyEvent.VK_SPACE)
-         spacePressed = true;  
-   }
-    
-   @Override
-   public void keyReleased(KeyEvent input) {
-      if (input.getKeyCode() == KeyEvent.VK_D)
-         rightPressed = false;
-      else if (input.getKeyCode() == KeyEvent.VK_A)
-         leftPressed = false;
-      else if (input.getKeyCode() == KeyEvent.VK_SPACE)
-         spacePressed = false;
-   }
-    
-   @Override
-   public void keyTyped(KeyEvent input) {
-        
-   }
+   
 }

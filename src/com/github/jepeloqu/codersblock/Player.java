@@ -2,7 +2,6 @@ package com.github.jepeloqu.codersblock;
 
 
 
-import java.awt.Image;
 import java.io.File;
 import javax.swing.ImageIcon;
 
@@ -13,19 +12,23 @@ import javax.swing.ImageIcon;
 public class Player extends Character {
     
    public Player(int xPosition, int yPosition) {
-      super();
       x = xPosition;
       y = yPosition;
       
-      jump = fall = false;
+      hitPoints = 10;
+      
+      jump = false;
+      fall = false;
       stand = true;
+      
+      dead = false;
       
       facingLeft = true;
       facingRight = false;
       
       updateImage();
       initializePhysicsValues();
-      updateCollisionPoints();
+      updateHitBoxAndCollisionPoints();
    }
    
    /**
@@ -50,19 +53,27 @@ public class Player extends Character {
    * 
    * @param level   current game level
    */ 
-   @Override 
-   public void mainLoop(Level level) {
+   public void mainLoop(Level level, Enemy enemy, boolean leftPressed, boolean rightPressed, boolean spacePressed) {
+      if(!dead)
+         updateState(leftPressed, rightPressed, spacePressed);
+      
       processXMovement();
+      checkIfTouchingSpike(level);
+      checkEnemyCollision(enemy);
       checkAndResolveXCollision(level);
+      
       if (!standing()){
          processYMovement();
+         checkIfTouchingSpike(level);
+         checkEnemyCollision(enemy);
          checkAndResolveYCollision(level);
       }
-      if (standing()){
+      else if (standing())
          checkFall(level);
-      }
-      applyDamping();
+      
       applyGravity();
+      applyDamping();
+      updateImage();
    }
 
    /**
@@ -104,15 +115,40 @@ public class Player extends Character {
       } 
    }
    
+   private void checkEnemyCollision(Enemy enemy) {
+      
+      if(hitBox.intersects(enemy.getHitBox()))
+         takeDamage(1, System.currentTimeMillis());
+   }
+   
+   private void takeDamage(int damage, long hitTime) {
+      if((hitTime - lastHitTime) > 200) {
+         hitPoints = hitPoints - damage;
+         lastHitTime = hitTime;
+         if(hitPoints <= 0) {
+            hitPoints = 0;
+            dead = true;
+            updateImage();
+         }
+      }
+   }
+   
    private void updateImage() {
+      ImageIcon ii;
+      
       if (facingLeft) {
-         ImageIcon ii = new ImageIcon(System.getProperty("user.dir") + File.separator + "resources" + File.separator + "images" + File.separator + "Player_Left.gif");
+         if (!dead)
+            ii = new ImageIcon(System.getProperty("user.dir") + File.separator + "resources" + File.separator + "images" + File.separator + "Player_Left.gif");
+         else
+            ii = new ImageIcon(System.getProperty("user.dir") + File.separator + "resources" + File.separator + "images" + File.separator + "Dead_Left.gif");
          characterImage = ii.getImage();
       }
       else if (facingRight) {
-         ImageIcon ii = new ImageIcon(System.getProperty("user.dir") + File.separator + "resources" + File.separator + "images" + File.separator + "Player_Right.gif");
+         if (!dead)
+            ii = new ImageIcon(System.getProperty("user.dir") + File.separator + "resources" + File.separator + "images" + File.separator + "Player_Right.gif");
+         else
+            ii = new ImageIcon(System.getProperty("user.dir") + File.separator + "resources" + File.separator + "images" + File.separator + "Dead_Right.gif");
          characterImage = ii.getImage();
-      }
-         
+      } 
    }
 }
